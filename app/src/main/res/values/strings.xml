@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AristiDevsLogin</string>
+    <string name="iniciar_sesion">Iniciar sesión</string>
+    <string name="olvidaste_password">¿Olvidaste tu contraseña?</string>
 </resources>

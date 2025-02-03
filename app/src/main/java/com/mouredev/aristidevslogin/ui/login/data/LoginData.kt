@@ -9,5 +9,4 @@ import androidx.lifecycle.MutableLiveData
 data class LoginData (
        var email: String="",
        var password: String=""
-
 )

@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,14 +38,13 @@ import kotlinx.coroutines.launch
 
 /**
  *
- * Cuando el usuario ha introducido un email correcto y un password de 7 caracateres
+ * Cuando el usuario ha introducido un email correcto y un password de 7 caracteres
  * se habilita el boton de login
  *
  * Cuando el usuario pulsa sobre el boton de login se comprueba que las credenciales
  * introducidas son correctas (a@b.com / 12345678)
  *
  * Inmediatamente se muestra un toast indicando si fueron correctas o no las credenciales
- *
  *
  * Created by Your name on 11/01/2024.
  */
@@ -53,9 +53,11 @@ const val TAG_LOG: String = "LoginScreen"
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
-    val gameUiState by viewModel.uiState.collectAsState()
-
-
+    //TODO
+    //1. Obtener el loginUiState con toda la información de la pantalla
+    //2. Crear un box que ocupe toda la pantalla con un padding de 16.dp
+    //3. Dentro del box, se llamara al Login con toda la informacion requerida
+    val loginUiSate by viewModel.uiState.collectAsState()
     Box(
         Modifier
             .fillMaxSize()
@@ -64,10 +66,10 @@ fun LoginScreen(viewModel: LoginViewModel) {
         Login(
             Modifier.align(Alignment.Center),
             viewModel,
-            viewModel.loginData,
-            gameUiState.loginEnable,
-            gameUiState.loginMessage,
-            gameUiState.loginChecked
+            loginUiSate.loginData,
+            loginUiSate.loginEnable,
+            loginUiSate.loginMessage,
+            loginUiSate.loginChecked
         )
     }
 }
@@ -75,6 +77,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
 /**
  * Representa toda la pantalla de login
  *
+ * @viewModel viewModel con la información del controlador
  * @loginData contiene los datos del formulario: email y contraseña
  * @loginEnable sirve para indicar si hay que habilitar el boton de inicio de sesion
  * @loginMessage mensaje a mostrar al usuario una vez que ha iniciado sesion
@@ -90,7 +93,11 @@ fun Login(
     loginMessage: String,
     loginChecked: Boolean
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    //TODO
+    //1.- Definir un mContext para el Toast: val mContext = LocalContext.current
+    //2.- Definir una columna con los siguientes elementos: HeaderImage, EmailField, PasswordField, ForgotPassword, LoginButton
+    //3.- Si se hizo login, habra que mostrar el toast y llamar al metodo onToasteShowed del viewModel
+    // para hacer que desaparezca de nuestra vista una vez se ha mostrado
     val mContext = LocalContext.current
 
     Column(modifier = modifier) {
@@ -101,21 +108,12 @@ fun Login(
         PasswordField(loginData) { viewModel.onLoginChanged(loginData.email, it) }
         ForgotPassword(Modifier.align(Alignment.End))
         Spacer(modifier = Modifier.padding(16.dp))
-        LoginButton(loginEnable) {
-            //Realmente no es necesario lanzarlo en una corrutina. Ya que no se bloquea nada
-            coroutineScope.launch {
-                Log.d(TAG_LOG, "lanzando corrutina de login")
-                viewModel.onLoginSelected()
-            }
-
-        }
-        //Si el usuario hizo login, mostramos el mensaje
+        LoginButton(loginEnable, { viewModel.onLoginSelected() })
+        //Si el usuario hizo login, mostramos el mensaje en un toast. El mensaje mostrar si fue correcto o no el login
         if (loginChecked) {
             mToast(mContext, loginMessage)
             viewModel.onToastShowed()
         }
-
-
     }
 }
 
@@ -124,6 +122,8 @@ fun Login(
  */
 @Composable
 fun HeaderImage(modifier: Modifier) {
+    //TODO
+    //1.- Mostrar la imagen que guste en tu app
     Image(
         painter = painterResource(id = R.drawable.atom_1472657_640),
         contentDescription = "Header",
@@ -147,6 +147,9 @@ private fun mToast(context: Context, message: String) {
  */
 @Composable
 fun LoginButton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
+    //TODO
+    //1. Crear un boton. Cuando se hace click se llamara a onLoginSelected. Solo estara habilitado cuando lo diga LoginEnable
+    //2. Proporciona los estilos que gustes a los botones
     Button(onClick = {
         Log.d(TAG_LOG, "Onclick")
         onLoginSelected()
@@ -156,9 +159,8 @@ fun LoginButton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
         contentColor = Color.White,
         disabledContentColor = Color.White,
     ), enabled = loginEnable) {
-        Text(text = "Iniciar sesion")
+        Text(stringResource(R.string.iniciar_sesion))
     }
-
 }
 
 /**
@@ -166,8 +168,10 @@ fun LoginButton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
  */
 @Composable
 fun ForgotPassword(modifier: Modifier) {
+    //TODO
+    //1.- Caja de texto con olvidaste contraseña pero sin accion asociada
     Text(
-        text = "Olvidaste la contraseña?",
+        text =  stringResource(R.string.olvidaste_password),
         modifier = modifier.clickable { },
         fontSize = 12.sp,
         fontWeight = FontWeight.Bold,
@@ -186,7 +190,9 @@ fun ForgotPassword(modifier: Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmailField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
-
+    //TODO
+    //1.- Crear un TextField para el email, cada vez que cambie el valor del TextField, se llamara a onLoginChanged
+    //2.- Aplicar la estetica visual que gustes
     //https://stackoverflow.com/questions/67320990/android-jetpack-compose-cant-set-backgroundcolor-for-outlinedtextfield
     TextField(
         value = loginData.email, onValueChange = onLoginChanged,
@@ -217,12 +223,14 @@ fun EmailField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PasswordField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
+    //1.- Crear un TextField para el password, cada vez que cambie el valor del TextField, se llamara a onLoginChanged
+    //2.- Aplicar la estetica visual que gustes
     var password by remember { mutableStateOf("") }
     //https://stackoverflow.com/questions/67320990/android-jetpack-compose-cant-set-backgroundcolor-for-outlinedtextfield
     TextField(
         value = loginData.password, onValueChange = onLoginChanged,
         modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(text = "Contraseña") },
+        placeholder = { Text(text = "Password") },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         singleLine = true,
         maxLines = 1,
