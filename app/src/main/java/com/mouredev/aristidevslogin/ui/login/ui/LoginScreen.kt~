@@ -214,6 +214,7 @@ fun EmailField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
 fun PasswordField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
     //1.- Crear un TextField para el password, cada vez que cambie el valor del TextField, se llamara a onLoginChanged
     //2.- Aplicar la estetica visual que gustes
+    var password by remember { mutableStateOf("") }
     //https://stackoverflow.com/questions/67320990/android-jetpack-compose-cant-set-backgroundcolor-for-outlinedtextfield
     TextField(
         value = loginData.password, onValueChange = onLoginChanged,
@@ -244,7 +245,10 @@ fun LoginScreenPreview() {
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun LoginAppPreview(
+
+
 ) {
+
     val loginViewModel = LoginViewModel()
     val loginUiState by loginViewModel.uiState.collectAsState()
     LoginForm(loginUiState = loginUiState,
