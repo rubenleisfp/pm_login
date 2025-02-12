@@ -86,7 +86,23 @@ fun LoginForm(
         //2.- Definir una columna con los siguientes elementos: HeaderImage, EmailField, PasswordField, ForgotPassword, LoginButton
         //3.- Si se hizo login, habra que mostrar el toast y llamar al metodo onToasteShowed del viewModel
         // para hacer que desaparezca de nuestra vista una vez se ha mostrado
+        val mContext = LocalContext.current
 
+        Column(modifier = modifier) {
+            HeaderImage(Modifier.align(Alignment.CenterHorizontally))
+            Spacer(modifier = Modifier.padding(16.dp))
+            EmailField(loginUiState.loginData, {email ->onLoginChanged(email, loginUiState.loginData.password)})
+            Spacer(modifier = Modifier.padding(16.dp))
+            PasswordField(loginUiState.loginData, { password -> onLoginChanged(loginUiState.loginData.email, password) })
+            ForgotPassword(Modifier.align(Alignment.End))
+            Spacer(modifier = Modifier.padding(16.dp))
+            LoginButton(loginUiState.loginEnable, onLoginSelected)
+            //Si el usuario hizo login, mostramos el mensaje en un toast. El mensaje mostrar si fue correcto o no el login
+            if (loginUiState.loginChecked) {
+                mToast(mContext, loginUiState.loginMessage)
+                onToastedShow()
+            }
+        }
     }
 }
 
@@ -97,7 +113,11 @@ fun LoginForm(
 fun HeaderImage(modifier: Modifier) {
     //TODO
     //1.- Mostrar la imagen que guste en tu app
-
+    Image(
+        painter = painterResource(id = R.drawable.atom_1472657_640),
+        contentDescription = "Header",
+        modifier = modifier
+    )
 }
 
 /**
@@ -119,7 +139,17 @@ fun LoginButton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
     //TODO
     //1. Crear un boton. Cuando se hace click se llamara a onLoginSelected. Solo estara habilitado cuando lo diga LoginEnable
     //2. Proporciona los estilos que gustes a los botones
-
+    Button(onClick = {
+        Log.d(TAG_LOG, "Onclick")
+        onLoginSelected()
+    }, modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp), colors = ButtonDefaults.buttonColors(
+        contentColor = Color.White,
+        disabledContentColor = Color.White,
+    ), enabled = loginEnable) {
+        Text(stringResource(R.string.iniciar_sesion))
+    }
 }
 
 /**
@@ -129,7 +159,13 @@ fun LoginButton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
 fun ForgotPassword(modifier: Modifier) {
     //TODO
     //1.- Caja de texto con olvidaste contraseña pero sin accion asociada
-
+    Text(
+        text =  stringResource(R.string.olvidaste_password),
+        modifier = modifier.clickable { },
+        fontSize = 12.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color(0xFFFB9600)
+    )
 }
 
 /**
@@ -147,6 +183,21 @@ fun EmailField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
     //1.- Crear un TextField para el email, cada vez que cambie el valor del TextField, se llamara a onLoginChanged
     //2.- Aplicar la estetica visual que gustes
     //https://stackoverflow.com/questions/67320990/android-jetpack-compose-cant-set-backgroundcolor-for-outlinedtextfield
+    TextField(
+        value = loginData.email, onValueChange = onLoginChanged,
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = { Text(text = "Email") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = Color(0xFF636262),
+            //backgroundColor = Color(0xFFDEDDDD),//TODO ¿como es esto en material 3?
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        )
+    )
+
 
 }
 
@@ -163,6 +214,22 @@ fun EmailField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
 fun PasswordField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
     //1.- Crear un TextField para el password, cada vez que cambie el valor del TextField, se llamara a onLoginChanged
     //2.- Aplicar la estetica visual que gustes
+    var password by remember { mutableStateOf("") }
+    //https://stackoverflow.com/questions/67320990/android-jetpack-compose-cant-set-backgroundcolor-for-outlinedtextfield
+    TextField(
+        value = loginData.password, onValueChange = onLoginChanged,
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = { Text(text = "Password") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = Color(0xFF636262),
+            //backgroundColor = Color(0xFFDEDDDD),//TODO ¿como es esto en material 3?
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        )
+    )
 }
 
 
@@ -181,6 +248,7 @@ fun LoginAppPreview(
 
 
 ) {
+
     val loginViewModel = LoginViewModel()
     val loginUiState by loginViewModel.uiState.collectAsState()
     LoginForm(loginUiState = loginUiState,
