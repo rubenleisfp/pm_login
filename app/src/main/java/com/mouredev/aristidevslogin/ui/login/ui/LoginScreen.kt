@@ -52,46 +52,15 @@ const val TAG_LOG: String = "LoginScreen"
 @Composable
 fun LoginScreen(loginViewModel: LoginViewModel) {
     val loginUiState by loginViewModel.uiState.collectAsState()
-    LoginApp(loginUiState = loginUiState,
+    LoginForm(loginUiState = loginUiState,
         onLoginChanged = {login: String, password:String -> loginViewModel.onLoginChanged(login, password)},
         onLoginSelected = { loginViewModel.onLoginSelected()},
         onToastedShow = {loginViewModel.onToastShowed()})
 }
 
 /**
- * Representa la aplicación de login
- * La cual esta contenida dentro de un box
- *
- * @loginUiState contiene los datos del estado
- * @onLoginChanged accion que se lanza cuando cambia algun valor del password o email
- * @onLoginSelected accion que se lanza al enviar el formulario
- * @onToastedShow util para mostrar y ocultar el toast que muestra el mensaje ok/ko de inicio
- * de sesion
- */
-@Composable
-fun LoginApp(
-    loginUiState: LoginUiState,
-    onLoginChanged: (String, String) -> Unit,
-    onLoginSelected: () -> Unit,
-    onToastedShow: () -> Unit
-) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        LoginForm(
-            Modifier.align(Alignment.Center),
-            loginUiState,
-            onLoginChanged,
-            onLoginSelected,
-            onToastedShow
-        )
-    }
-}
-
-/**
  * Representa el formulario de login
+ * el cual esta contenida dentro de un box
  *
  * @loginUiState contiene los datos del estado
  * @onLoginChanged accion que se lanza cuando cambia algun valor del password o email
@@ -101,33 +70,38 @@ fun LoginApp(
  */
 @Composable
 fun LoginForm(
-    modifier: Modifier,
     loginUiState: LoginUiState,
     onLoginChanged: (String, String) -> Unit,
     onLoginSelected: () -> Unit,
-    onToastedShow: () -> Unit
-
+    onToastedShow: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    //TODO
-    //1.- Definir un mContext para el Toast: val mContext = LocalContext.current
-    //2.- Definir una columna con los siguientes elementos: HeaderImage, EmailField, PasswordField, ForgotPassword, LoginButton
-    //3.- Si se hizo login, habra que mostrar el toast y llamar al metodo onToasteShowed del viewModel
-    // para hacer que desaparezca de nuestra vista una vez se ha mostrado
-    val mContext = LocalContext.current
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        //TODO
+        //1.- Definir un mContext para el Toast: val mContext = LocalContext.current
+        //2.- Definir una columna con los siguientes elementos: HeaderImage, EmailField, PasswordField, ForgotPassword, LoginButton
+        //3.- Si se hizo login, habra que mostrar el toast y llamar al metodo onToasteShowed del viewModel
+        // para hacer que desaparezca de nuestra vista una vez se ha mostrado
+        val mContext = LocalContext.current
 
-    Column(modifier = modifier) {
-        HeaderImage(Modifier.align(Alignment.CenterHorizontally))
-        Spacer(modifier = Modifier.padding(16.dp))
-        EmailField(loginUiState.loginData, {email ->onLoginChanged(email, loginUiState.loginData.password)})
-        Spacer(modifier = Modifier.padding(16.dp))
-        PasswordField(loginUiState.loginData, { password -> onLoginChanged(loginUiState.loginData.email, password) })
-        ForgotPassword(Modifier.align(Alignment.End))
-        Spacer(modifier = Modifier.padding(16.dp))
-        LoginButton(loginUiState.loginEnable, onLoginSelected)
-        //Si el usuario hizo login, mostramos el mensaje en un toast. El mensaje mostrar si fue correcto o no el login
-        if (loginUiState.loginChecked) {
-            mToast(mContext, loginUiState.loginMessage)
-            onToastedShow()
+        Column(modifier = modifier) {
+            HeaderImage(Modifier.align(Alignment.CenterHorizontally))
+            Spacer(modifier = Modifier.padding(16.dp))
+            EmailField(loginUiState.loginData, {email ->onLoginChanged(email, loginUiState.loginData.password)})
+            Spacer(modifier = Modifier.padding(16.dp))
+            PasswordField(loginUiState.loginData, { password -> onLoginChanged(loginUiState.loginData.email, password) })
+            ForgotPassword(Modifier.align(Alignment.End))
+            Spacer(modifier = Modifier.padding(16.dp))
+            LoginButton(loginUiState.loginEnable, onLoginSelected)
+            //Si el usuario hizo login, mostramos el mensaje en un toast. El mensaje mostrar si fue correcto o no el login
+            if (loginUiState.loginChecked) {
+                mToast(mContext, loginUiState.loginMessage)
+                onToastedShow()
+            }
         }
     }
 }
@@ -277,7 +251,7 @@ fun LoginAppPreview(
 
     val loginViewModel = LoginViewModel()
     val loginUiState by loginViewModel.uiState.collectAsState()
-    LoginApp(loginUiState = loginUiState,
+    LoginForm(loginUiState = loginUiState,
         onLoginChanged = {login: String, password:String -> loginViewModel.onLoginChanged(login, password)},
         onLoginSelected = { loginViewModel.onLoginSelected()},
         onToastedShow = {loginViewModel.onToastShowed()})

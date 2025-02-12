@@ -29,7 +29,7 @@ class LoginViewModel : ViewModel() {
      */
     fun onLoginChanged(email: String, password: String) {
         //TODO:
-        //1.-Crear un nuevo objeto LogiData que sustituira al actual de _uiState
+        //1.-Crear un nuevo objeto LoginData que sustituira al actual de _uiState
         //2. Comprobar si los campos email y password son validos.
         // Si son campos validos, entonces habilitamos boton de login
         Log.d(TAG_LOG, "onLoginChanged")
@@ -55,7 +55,7 @@ class LoginViewModel : ViewModel() {
     /**
      * Se invoca cuando el usuario hace click en login
      * Comprueba que el login sea valido, es decir, que las credenciales sean Ok
-     * Actualiza el UIState con el mensaje de login "Ok /Incorrecto".
+     * Actualiza el UIState con el mensaje de login "Login Ok / Login incorrecto, revise las credenciales".
      * Actualiza tambien la variable loginChecked a true para que la vista sepa que hacer
      */
     fun onLoginSelected() {
